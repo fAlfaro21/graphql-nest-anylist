@@ -2,6 +2,22 @@
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
 </p>
 
+### Resumen
+
+CRUD de ítems para nuestro backend, base de datos Postgres con Nest + GraphQL:
+Postgres
+TypeORM
+Entidades con GraphQL Object Types
+CRUD (Queries y Mutations)
+
+#### Autenticación y autorización de usuarios:
+
+Protección de queries y mutations
+Creación de usuarios desde GraphQL
+Login
+Revalidación de token de autenticación
+JWT
+
 # Dev
 
 1. Clonar el proyecto
