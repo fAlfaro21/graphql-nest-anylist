@@ -12,10 +12,10 @@ CRUD (Queries y Mutations)
 
 #### Autenticación y autorización de usuarios:
 
-Protección de queries y mutations
-Creación de usuarios desde GraphQL
-Login
-Revalidación de token de autenticación
+Protección de queries y mutations,
+Creación de usuarios desde GraphQL,
+Login,
+Revalidación de token de autenticación,
 JWT
 
 # Dev
