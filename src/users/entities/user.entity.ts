@@ -2,6 +2,7 @@ import { ObjectType, Field, Int, ID } from '@nestjs/graphql';
 import { type } from 'os';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
+//Con la entidad defino mi tabla de la base de datos
 @Entity({ name: 'users' }) //Así se llamará mi tabla
 @ObjectType()
 export class User {
@@ -10,11 +11,11 @@ export class User {
   @Field(() => ID )
   id: string;
 
-  @Column()
+  @Column() //Decorador de TypeORM
   @Field(() => String )
   fullName: string;
 
-  @Column({  unique: true })
+  @Column({  unique: true }) //Crea un índice de único y hace que la consulta sea más rápida
   @Field(() => String )
   email: string;
 
@@ -33,7 +34,9 @@ export class User {
   @Column({
     type: 'boolean',
     default: true
-  })
+  }) //Decorador de TypeORM
   @Field(() => Boolean )
   isActive:boolean;
+
+  //TODO: relaciones y otras cosas
 }

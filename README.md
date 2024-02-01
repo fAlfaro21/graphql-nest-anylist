@@ -16,6 +16,7 @@ Protección de queries y mutations,
 Creación de usuarios desde GraphQL,
 Login,
 Revalidación de token de autenticación,
+Passport,
 JWT
 
 # Dev

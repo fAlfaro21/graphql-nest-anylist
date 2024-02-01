@@ -10,7 +10,7 @@ export class ItemsService {
 
   constructor(
     //Para poder hacer operaciones con mi BBDD
-    @InjectRepository( Item )
+    @InjectRepository( Item ) //De typeORM, para inyectar el respositorio Item y poder utilizarlo
     private  readonly itemsRepository: Repository<Item>
   ){}
 
@@ -26,19 +26,21 @@ export class ItemsService {
 
   async findOne(id: string): Promise<Item> {
     const item = await this.itemsRepository.findOneBy({ id });
-    if ( !item ) throw new NotFoundException(`Item with id not found`);
+    if ( !item ) throw new NotFoundException(`Item with id: ${ id } not found`);
     return item
   }
 
   async update(id: string, updateItemInput: UpdateItemInput): Promise<Item> { //Se trata de  una promesa que resuelve un item
+    //Podemos utilizar el findOne o  bien, el preload:
     const item = await this.itemsRepository.preload(updateItemInput) //el preload hace una búsqueda primero y luego carga la entidad
     
-    if ( !item ) throw new NotFoundException(`Item with id not found`); //Si el item es nulo...
+    if ( !item ) throw new NotFoundException(`Item with id: ${ id } not found`); //Si el item es nulo salta la excepción
     
     return await this.itemsRepository.save( item );
   }
 
   async remove(id: string): Promise<Item> {
+    //TODO: soft delete, integridad referencial
     const item = await this.findOne( id ) //el preload hace una búsqueda primero y luego carga la entidad    
     await this.itemsRepository.remove( item );
     return { ...item, id };

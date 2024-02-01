@@ -1,9 +1,14 @@
+import { UseGuards } from '@nestjs/common';
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { SignupInput, LoginInput } from './dto/inputs';
-import { AuthResponse } from './dto/types/auth-response.type';
+import { AuthResponse } from './types/auth-response.type';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { User } from '../users/entities/user.entity';
+import { ValidRoles } from './enums/valid-roles.enum';
 
-@Resolver()
+@Resolver( () => AuthResponse )
 export class AuthResolver {
 
   constructor(
@@ -27,9 +32,14 @@ export class AuthResolver {
     return await this.authService.login( loginInput );
   }
 
-/*
-  @Query({ name: revalidate})
-  async revalidateToken(){
-    //return await this.authService.revalidateToken();
-  } */
+
+  @Query( () => AuthResponse, { name: 'revalidate'}) //Ojo: Importar @Query de GQL
+  //Cuando se invoca este endpoint nuestro Guard (JwtAuthGuard), automaticamente se invoca nuestra estrategia (así pues valida el JWT):
+  @UseGuards( JwtAuthGuard ) //Aplicamos la autenticación: Utilizamos nuestro Guard personalizado para verificar que el token sea válido/correcto y que el usuario esté activo
+  revalidateToken(
+    @CurrentUser( /* [ ValidRoles.admin ] */ ) user: User  //Utilizamos este decorador personalizado para obtener el usuario y dejarlo en el argumento "user". Sólo los admin podrán ejecutar el endpoint
+  ): AuthResponse{
+      return this.authService.revalidateToken( user );
+    
+  }
 }

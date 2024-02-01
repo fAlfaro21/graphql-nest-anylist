@@ -7,7 +7,7 @@ import { Item } from './entities/item.entity';
 @Module({
   providers: [ItemsResolver, ItemsService],
   imports: [
-    TypeOrmModule.forFeature([ Item ])
+    TypeOrmModule.forFeature([ Item ])//Vincula la entidad con la base de datos, para poder usar el repositorio Item en el servicio
   ]
 })
 export class ItemsModule {}

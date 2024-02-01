@@ -15,7 +15,7 @@ export class CreateItemInput {
 
   @Field( () => String, { nullable: true } ) //nullable para hacerlo opcional para GQL
   @IsString()
-  @IsOptional()
-  quantityUnits?: string;
+  @IsOptional() //nullable para hacerlo opcional para class validator
+  quantityUnits?: string; //nullable para hacerlo opcional para Typescript
   
 }

@@ -23,17 +23,18 @@ import { AuthModule } from './auth/auth.module';
         ApolloServerPluginLandingPageLocalDefault()
         ]
       }),
-      TypeOrmModule.forRoot({
-        type: 'postgres',
-        host: process.env.DB_HOST,
-        port: +process.env.DB_PORT,
-        username: process.env.DB_USERNAME,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        //El synchronize sólo para desarrollo, pues actualiza cualquier cambio en la BBDD...en producción es peligroso
-        synchronize: true,
-        autoLoadEntities: true,
-      }),
+    TypeOrmModule.forRoot({
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: +process.env.DB_PORT,
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      //OJO: El synchronize sólo para desarrollo, pues actualiza cualquier cambio en la BBDD...en producción es peligroso
+      //...para crear las tablas definidas en las entidades, de forma automática
+      synchronize: true,
+      autoLoadEntities: true, //NestJS puede realizar por nosotros el proceso de cargar las entidades en TypeORM automáticamente, sin que las tengamos que indicar en el array de la propiedad "entities"
+    }),
     ItemsModule,
     UsersModule,
     AuthModule,
