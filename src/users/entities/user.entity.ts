@@ -1,6 +1,6 @@
 import { ObjectType, Field, Int, ID } from '@nestjs/graphql';
 import { type } from 'os';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 //Con la entidad defino mi tabla de la base de datos
 @Entity({ name: 'users' }) //Así se llamará mi tabla
@@ -38,5 +38,12 @@ export class User {
   @Field(() => Boolean )
   isActive:boolean;
 
-  //TODO: relaciones y otras cosas
+  //TODO: relaciones
+  //Un usuario que ha acutalizado un registro puede aparecer en varios registros, y un registro sólo tendrá un usuario
+  //Nos pide la relación izauierda y la relación derecha
+  @ManyToOne( () => User, (user) => user.lastUpdatedBy, {nullable: true, lazy: true} ) //ver la docu de TypeORM para lazy: cuando se hacen consultas el lazy carga la relación
+  @JoinColumn({ name: 'lastUpdatedBy' }) //Porque necesitamos que siempre esté ahí
+  @Field(() => User, {nullable: true} ) //Hay que poner esto para GQL, que puede ser nulo
+  lastUpdatedBy?: User;
+
 }

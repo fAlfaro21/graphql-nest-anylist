@@ -2,6 +2,7 @@ import { join } from 'path';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
@@ -14,7 +15,40 @@ import { AuthModule } from './auth/auth.module';
 
     ConfigModule.forRoot(),
 
-    GraphQLModule.forRoot<ApolloDriverConfig>({
+    //Configuración GQL forRootAsync:
+    GraphQLModule.forRootAsync({
+      driver: ApolloDriver,
+      imports: [
+        AuthModule  //Para que el forRootAsync pueda tener acceso a todo lo que AuthModule ofrece (poder verificar el token)
+      ],
+      inject: [
+        JwtService //De igual forma necsito el servicio, que viene en el módulo AuthModule, para tener el tipado
+      ],
+      useFactory: async( jwtService: JwtService ) => ({
+        playground: false,
+          autoSchemaFile: join( process.cwd(), 'src/schema.gql'),
+          plugins: [
+            ApolloServerPluginLandingPageLocalDefault()
+          ],
+          context({ req }){
+
+            //Comentamos esta parte porque el login tiene que pasar por aquí para generar el esquema..
+            //..y al momento del login no tenemos un token, con lo que no nos permitiría seguir
+            //Lo suyo sería tener el login y el signup tercializado o fuera, en otro restful API aparte
+
+            /* const token = req.headers.authorization?.replace('Bearer ','');
+            if ( !token ) throw Error('Token needed');
+
+            const payload = jwtService.decode(token);
+            if ( !payload ) throw Error('Token not valid'); */
+            
+          }
+      })
+    }),
+
+
+    //Configuración GQL básica:
+/*     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
       // debug: false,
       playground: false,
@@ -22,7 +56,7 @@ import { AuthModule } from './auth/auth.module';
       plugins: [
         ApolloServerPluginLandingPageLocalDefault()
         ]
-      }),
+      }), */
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
