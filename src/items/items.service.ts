@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateItemInput } from './dto/inputs/create-item.input';
 import { UpdateItemInput } from './dto/inputs/update-item.input';
+import { User } from 'src/users/entities/user.entity';
 import { Item } from './entities/item.entity';
-import { Repository } from 'typeorm';
 
 @Injectable()
 export class ItemsService {
@@ -14,35 +15,65 @@ export class ItemsService {
     private  readonly itemsRepository: Repository<Item>
   ){}
 
-  async create(createItemInput: CreateItemInput): Promise<Item> {
-    const newItem = this.itemsRepository.create(createItemInput)
+  async create(createItemInput: CreateItemInput, user: User): Promise<Item> {
+    const newItem = this.itemsRepository.create({...createItemInput, user}) //Desestructuro lo que viene en el createItemInput y adicionalmente voy a colocar ahí el valor del usuario
     return await this.itemsRepository.save( newItem );
   }
 
-  async findAll(): Promise<Item[]> {
-
-    return this.itemsRepository.find();
+  //Solo debe devolver los artículos pertenecientes al usuario solicitante
+  async findAll( user: User ): Promise<Item[]> {
+    //Es equivalente a decir: 
+    //select * from items where userId = '123456-123456-123456'
+    return this.itemsRepository.find({
+      where: {
+        user: {
+          id: user.id
+        }
+      }
+    });
   }
 
-  async findOne(id: string): Promise<Item> {
-    const item = await this.itemsRepository.findOneBy({ id });
+  async findOne( id: string, user: User ): Promise<Item> {
+    const item = await this.itemsRepository.findOneBy({ 
+      id,
+      user: {
+        id: user.id
+      } 
+      //también podría añadir más cosas con el query builder .andwhere 
+    });
     if ( !item ) throw new NotFoundException(`Item with id: ${ id } not found`);
+    //item.user = user;
     return item
   }
 
-  async update(id: string, updateItemInput: UpdateItemInput): Promise<Item> { //Se trata de  una promesa que resuelve un item
+  async update(id: string, updateItemInput: UpdateItemInput, user: User): Promise<Item> { //Se trata de  una promesa que resuelve un item
+    
+    await this.findOne( id, user );
+    
     //Podemos utilizar el findOne o  bien, el preload:
     const item = await this.itemsRepository.preload(updateItemInput) //el preload hace una búsqueda primero y luego carga la entidad
-    
+    //const item = await this.itemsRepository.preload(...updateItemInput, user) //en caso de que no pusieramos el lazy en la entidad Item
+
     if ( !item ) throw new NotFoundException(`Item with id: ${ id } not found`); //Si el item es nulo salta la excepción
     
     return await this.itemsRepository.save( item );
   }
 
-  async remove(id: string): Promise<Item> {
+  async remove(id: string, user: User): Promise<Item> {
     //TODO: soft delete, integridad referencial
-    const item = await this.findOne( id ) //el preload hace una búsqueda primero y luego carga la entidad    
+    const item = await this.findOne( id, user ) //el preload hace una búsqueda primero y luego carga la entidad    
     await this.itemsRepository.remove( item );
     return { ...item, id };
   }
+
+  async itemsCountByUser( user:User ): Promise<number>{
+    return this.itemsRepository.count({
+      where: {
+        user: {
+          id: user.id,
+        }
+      }
+    });
+  }
+
 }

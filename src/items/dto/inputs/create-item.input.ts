@@ -9,9 +9,9 @@ export class CreateItemInput {
   @IsString()
   name: string;
 
-  @Field( () => Float )
+/*   @Field( () => Float )
   @IsPositive()
-  quantity: number;
+  quantity: number; */
 
   @Field( () => String, { nullable: true } ) //nullable para hacerlo opcional para GQL
   @IsString()

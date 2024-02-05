@@ -1,6 +1,6 @@
-import { ObjectType, Field, Int, ID } from '@nestjs/graphql';
-import { type } from 'os';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Item } from 'src/items/entities/item.entity';
 
 //Con la entidad defino mi tabla de la base de datos
 @Entity({ name: 'users' }) //Así se llamará mi tabla
@@ -45,5 +45,13 @@ export class User {
   @JoinColumn({ name: 'lastUpdatedBy' }) //Porque necesitamos que siempre esté ahí
   @Field(() => User, {nullable: true} ) //Hay que poner esto para GQL, que puede ser nulo
   lastUpdatedBy?: User;
+
+  //Definimos la relación con los items
+  //Un usuario puede tener muchos items
+  //Nuestra entidad de usuarios se va a relacionar con la entidad Item
+  //Y, por cada instancia que yo tenga de mis items, se va a enlazar con el campo de user (de la entidad Item)
+  @OneToMany( () => Item, (item) => item.user, { lazy: true })
+  @Field( () => [Item] )
+  items: Item[]
 
 }
