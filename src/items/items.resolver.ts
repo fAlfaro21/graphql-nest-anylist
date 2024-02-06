@@ -3,9 +3,10 @@ import { Resolver, Query, Mutation, Args, Int, ID } from '@nestjs/graphql';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ItemsService } from './items.service';
 import { Item } from './entities/item.entity';
-import { User } from 'src/users/entities/user.entity';
+import { User } from './../users/entities/user.entity';
 import { CreateItemInput, UpdateItemInput } from './dto/inputs';
-import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
+import { PaginationArgs, SearchArgs } from './../common/dto/args';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
 
 @Resolver(() => Item)
 @UseGuards( JwtAuthGuard ) //Nos garantiza que para realizar cualquier acción hay que estar autenticado
@@ -23,9 +24,11 @@ export class ItemsResolver {
   //Solo debe devolver los artículos pertenecientes al usuario solicitante
   @Query(() => [Item], { name: 'items' })
   async findAll(
-    @CurrentUser() user: User
+    @CurrentUser() user: User,
+    @Args() paginationArgs: PaginationArgs,
+    @Args() searchArgs: SearchArgs,
   ): Promise<Item[]> {
-    return await this.itemsService.findAll( user );
+    return await this.itemsService.findAll( user, paginationArgs, searchArgs );
   }
 
   @Query(() => Item, { name: 'item' })

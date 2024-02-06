@@ -8,7 +8,8 @@ async function bootstrap() {
   app.useGlobalPipes( 
     new ValidationPipe({
     whitelist: true,
-    forbidNonWhitelisted: true,
+    //forbidNonWhitelisted: true,  comentamos esta opción del class validator (o ponemos false) para poder recibir más información de la que yo espero (enviar varios argumentos en items findAll)
+    //No es necesario puesto que GQL ya se encarga de ello
     })
    );
 

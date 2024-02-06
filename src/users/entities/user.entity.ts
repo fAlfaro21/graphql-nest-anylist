@@ -51,7 +51,7 @@ export class User {
   //Nuestra entidad de usuarios se va a relacionar con la entidad Item
   //Y, por cada instancia que yo tenga de mis items, se va a enlazar con el campo de user (de la entidad Item)
   @OneToMany( () => Item, (item) => item.user, { lazy: true })
-  @Field( () => [Item] )
+  //@Field( () => [Item] )  //Evito que pueda consultarse, como hicimos como el password...porque configuramos un nuevo @ResolveField(llamdo getItemsByUser)
   items: Item[]
 
 }

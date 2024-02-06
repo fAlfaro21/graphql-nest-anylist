@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { CreateItemInput } from './dto/inputs/create-item.input';
 import { UpdateItemInput } from './dto/inputs/update-item.input';
-import { User } from 'src/users/entities/user.entity';
+import { PaginationArgs, SearchArgs } from './../common/dto/args';
+import { User } from './../users/entities/user.entity';
 import { Item } from './entities/item.entity';
 
 @Injectable()
@@ -21,16 +22,36 @@ export class ItemsService {
   }
 
   //Solo debe devolver los artículos pertenecientes al usuario solicitante
-  async findAll( user: User ): Promise<Item[]> {
+  async findAll( user: User, paginationArgs: PaginationArgs, searchArgs: SearchArgs  ): Promise<Item[]> {
+
+    const { limit, offset } = paginationArgs;	
+    const { search } = searchArgs;
+
+    //1. Primera forma, con QueryBuilder
+    const queryBuilder = this.itemsRepository.createQueryBuilder()
+      .take( limit )
+      .skip( offset )
+      .where( `"userId" = :userId`, { userId: user.id } ) //la variable userId va a apuntar al valor de user.id
+
+    //Si existe search, añade una nueva condición where
+    if ( search ) {
+      queryBuilder.andWhere('LOWER(name) like :name', { name: `%${ search.toLowerCase() }%` })
+    }
+
+      return queryBuilder.getMany();
     //Es equivalente a decir: 
     //select * from items where userId = '123456-123456-123456'
-    return this.itemsRepository.find({
+    //2. Otra forma de hacerlo, con find:
+    /* return this.itemsRepository.find({
+      take: limit,
+      skip: offset,
       where: {
         user: {
           id: user.id
-        }
+        },
+        name: Like(`%${ search.toLocaleLowerCase() }%`),
       }
-    });
+    }); */
   }
 
   async findOne( id: string, user: User ): Promise<Item> {
