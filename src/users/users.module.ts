@@ -12,7 +12,7 @@ import { UsersResolver } from './users.resolver';
     ItemsModule
   ],
   exports: [
-    //TypeOrmModule,   -> en el caso de que alguien quisiera utilizar el users entity o repository
+    TypeOrmModule,   //-> para poder utilizar/inyectar el user entity o el repository
     UsersService
   ]
 })

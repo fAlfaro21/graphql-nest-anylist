@@ -10,8 +10,8 @@ import { Item } from './entities/item.entity';
     TypeOrmModule.forFeature([ Item ])//Vincula la entidad con la base de datos, para poder usar el repositorio Item en el servicio
   ],
   exports: [
+    TypeOrmModule, //Para poder tener acceso a la entidad
     ItemsService, //para poder exponer el itemsCountByUser
-    TypeOrmModule,
   ]
 })
 export class ItemsModule {}
