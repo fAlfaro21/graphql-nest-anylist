@@ -1,7 +1,11 @@
+import { ListsModule } from 'src/lists/lists.module';
+import { ListItemModule } from 'src/list-item/list-item.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+
 import { ItemsModule } from 'src/items/items.module';
 import { UsersModule } from 'src/users/users.module';
+
 import { SeedService } from './seed.service';
 import { SeedResolver } from './seed.resolver';
 
@@ -10,6 +14,8 @@ import { SeedResolver } from './seed.resolver';
   imports: [
     ConfigModule,
     ItemsModule,
+    ListItemModule,
+    ListsModule,
     UsersModule,
   ]
 })

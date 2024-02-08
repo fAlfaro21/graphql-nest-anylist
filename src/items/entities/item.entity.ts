@@ -1,6 +1,7 @@
 import { ObjectType, Field, ID, Float } from '@nestjs/graphql';
+import { ListItem } from 'src/list-item/entities/list-item.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, Index, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 //Con la entidad defino mi tabla de la base de datos
 @Entity({ name:'items' }) //Así se llamará mi tabla
@@ -32,4 +33,8 @@ export class Item {
   @Index('userId-index') //Nos añade un indice para optimizar las queries (suponemos que vamos a tener muchos items)
   @Field( () => User ) //GQL
   user: User;
+
+  @OneToMany( () => ListItem, (listItem) => listItem.item, { nullable: false, lazy: true } ) //TypeORM. El lazy es para decir que cuando yo haga una consulta para traer los artículos, también me traiga/llene la info del usario
+  @Field( () => [ListItem] ) //Para saber en qué listas ha aparecido el item
+  listItem: ListItem[];
 }

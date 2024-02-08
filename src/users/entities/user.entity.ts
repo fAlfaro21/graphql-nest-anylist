@@ -1,6 +1,7 @@
 import { ObjectType, Field, ID } from '@nestjs/graphql';
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Item } from 'src/items/entities/item.entity';
+import { List } from 'src/lists/entities/list.entity';
 
 //Con la entidad defino mi tabla de la base de datos
 @Entity({ name: 'users' }) //Así se llamará mi tabla
@@ -53,5 +54,8 @@ export class User {
   @OneToMany( () => Item, (item) => item.user, { lazy: true })
   //@Field( () => [Item] )  //Evito que pueda consultarse, como hicimos como el password...porque configuramos un nuevo @ResolveField(llamdo getItemsByUser)
   items: Item[]
+
+  @OneToMany( () => List, (list) => list.user )
+  lists: List[]
 
 }
